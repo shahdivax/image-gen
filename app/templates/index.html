@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <h1 class="text-3xl md:text-4xl font-bold text-center mb-8 neon-text">AI Image Generator</h1>
+        
+        <div class="mb-6">
+            <select id="modelSelect" class="w-full p-3 border rounded text-lg bg-gray-800 border-gray-700 text-white focus:border-neon-blue focus:ring focus:ring-neon-blue focus:ring-opacity-50">
+                <option value="">Select a model</option>
+            </select>
+        </div>
+        
+        <div class="mb-6">
+            <textarea id="promptInput" class="w-full p-3 border rounded text-lg bg-gray-800 border-gray-700 text-white focus:border-neon-blue focus:ring focus:ring-neon-blue focus:ring-opacity-50" rows="3" placeholder="Enter your prompt here"></textarea>
+        </div>
+        
+        <button id="generateBtn" class="w-full bg-neon-blue text-white py-3 rounded text-lg font-semibold hover:bg-neon-blue-bright transition duration-300 neon-box-shadow">Generate Image</button>
+        
+        <div id="loading" class="hidden mt-6 text-center">
+            <div class="spinner"></div>
+            <p class="mt-2 text-lg neon-text">Generating image...</p>
+        </div>
+        
+        <div id="imageGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8"></div>
+    </div>
+    
+    <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 hidden flex items-center justify-center p-4">
+        <div class="bg-gray-800 rounded-lg max-w-3xl w-full max-h-full overflow-auto">
+            <img id="modalImage" src="" alt="Generated Image" class="w-full h-auto">
+            <button id="closeModal" class="mt-4 bg-neon-red text-white py-2 px-4 rounded text-lg font-semibold hover:bg-neon-red-bright transition duration-300 w-full neon-box-shadow">Close</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
