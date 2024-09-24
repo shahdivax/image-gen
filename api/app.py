@@ -68,6 +68,7 @@ def generate_image():
         image = Image.open(io.BytesIO(response.content))
         buffered = io.BytesIO()
         image.save(buffered, format="PNG")
+        print(f"image: {image}")
         img_str = base64.b64encode(buffered.getvalue()).decode()
         return jsonify({"image": img_str})
     else:
