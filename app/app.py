@@ -1,21 +1,30 @@
-from flask import Blueprint, jsonify, request, current_app, render_template
+from flask import Flask, jsonify, request, render_template
+from flask_cors import CORS
+from dotenv import load_dotenv
 import requests
 import io
 from PIL import Image
 import base64
+import os
 
-main = Blueprint('main', __name__)
+load_dotenv()
 
-@main.route('/')
+app = Flask(__name__)
+CORS(app)
+
+app.config['HF_API_TOKEN'] = os.getenv('HF_API_TOKEN')
+app.config['HF_API_URL'] = "https://api-inference.huggingface.co/models/"
+
+@app.route('/')
 def home():
     return render_template('index.html')
 
-@main.route('/api/models', methods=['GET'])
+@app.route('/api/models', methods=['GET'])
 def get_models():
     response = requests.get(
         "https://huggingface.co/api/models",
         params={"search":"flux","limit":500,"full":"True","config":"True"},
-        headers={"Authorization": f"Bearer {current_app.config['HF_API_TOKEN']}"}
+        headers={"Authorization": f"Bearer {app.config['HF_API_TOKEN']}"}
     )
     if response.status_code == 200:
         models = response.json()
@@ -24,7 +33,7 @@ def get_models():
     else:
         return jsonify({"error": "Failed to fetch models"}), 500
 
-@main.route('/api/generate', methods=['POST'])
+@app.route('/api/generate', methods=['POST'])
 def generate_image():
     data = request.json
     model = data.get('model')
@@ -50,8 +59,8 @@ def generate_image():
         if instance_prompt:
             prompt = f"{prompt}, {instance_prompt}"
     
-    api_url = f"{current_app.config['HF_API_URL']}{model}"
-    headers = {"Authorization": f"Bearer {current_app.config['HF_API_TOKEN']}"}
+    api_url = f"{app.config['HF_API_URL']}{model}"
+    headers = {"Authorization": f"Bearer {app.config['HF_API_TOKEN']}"}
     print(f"model: {model}, instance: {instance_prompt}")
     response = requests.post(api_url, headers=headers, json={"inputs": prompt})
     
@@ -63,3 +72,6 @@ def generate_image():
         return jsonify({"image": img_str})
     else:
         return jsonify({"error": "Failed to generate image"}), 500
+
+if __name__ == '__main__':
+    app.run()
