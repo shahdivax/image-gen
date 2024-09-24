@@ -75,4 +75,4 @@ def generate_image():
         return jsonify({"error": "Failed to generate image"}), 500
 
 if __name__ == '__main__':
-    app.run()
+    app.run(port=5000)
