@@ -6,6 +6,7 @@ import io
 from PIL import Image
 import base64
 import os
+import logging
 
 load_dotenv()
 
@@ -23,7 +24,7 @@ def home():
 def get_models():
     response = requests.get(
         "https://huggingface.co/api/models",
-        params={"search":"flux","limit":500,"full":"True","config":"True"},
+        params={"search":"flux lora","limit":500,"full":"True","config":"True"},
         headers={"Authorization": f"Bearer {app.config['HF_API_TOKEN']}"}
     )
     if response.status_code == 200:
@@ -62,13 +63,14 @@ def generate_image():
     api_url = f"{app.config['HF_API_URL']}{model}"
     headers = {"Authorization": f"Bearer {app.config['HF_API_TOKEN']}"}
     print(f"model: {model}, instance: {instance_prompt}")
+    logging.info(f"model: {model}, instance: {instance_prompt}")
     response = requests.post(api_url, headers=headers, json={"inputs": prompt})
     
     if response.status_code == 200:
         image = Image.open(io.BytesIO(response.content))
         buffered = io.BytesIO()
         image.save(buffered, format="PNG")
-        print(f"image: {image}")
+        # print(f"image: {image}")
         img_str = base64.b64encode(buffered.getvalue()).decode()
         return jsonify({"image": img_str})
     else:
